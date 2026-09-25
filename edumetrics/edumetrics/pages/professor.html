@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EduMetrics — Painel do professor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">Edu<span>Metrics</span></div>
+    <nav>
+      <button class="nav-item active" data-secao="visao-geral">Visão geral</button>
+      <button class="nav-item" data-secao="alunos">Lista de alunos</button>
+      <button class="nav-item" data-secao="comparacao">Comparar alunos</button>
+      <button class="nav-item" data-secao="professores">Avaliação docente</button>
+      <button class="nav-item" data-secao="notificacoes">
+        Atividades <span class="chip critico" id="badge-notif" style="display:none;">novo</span>
+      </button>
+    </nav>
+    <div class="who">
+      <strong id="who-name">—</strong>
+      <span id="who-disc"></span>
+      <button class="logout" onclick="EDU_AUTH.sair()">Sair</button>
+    </div>
+  </aside>
+
+  <main>
+    <button class="menu-toggle" id="btn-menu">☰ Menu</button>
+    <div class="page-head">
+      <div>
+        <h1>Painel da turma</h1>
+        <p>Indicadores de desempenho, alertas e comparação entre alunos.</p>
+      </div>
+      <div class="filters">
+        <select id="filtro-turma"></select>
+      </div>
+    </div>
+
+    <section id="secao-visao-geral">
+      <section class="indicators" id="indicadores"></section>
+
+      <div class="two-col">
+        <div class="panel">
+          <h2>Evolução da turma</h2>
+          <p class="panel-sub">Média geral da turma por bimestre.</p>
+          <canvas id="grafico-turma" height="200"></canvas>
+        </div>
+        <div class="panel">
+          <h2>Alertas da turma</h2>
+          <p class="panel-sub">Alunos que exigem atenção, do mais crítico ao menos.</p>
+          <ul class="alert-list" id="lista-alertas"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="secao-alunos" style="display:none;">
+      <div class="panel">
+        <h2>Lista de alunos</h2>
+        <p class="panel-sub">Pesquise por nome e clique em um aluno para ver detalhes.</p>
+        <div class="filters" style="margin-bottom:14px;">
+          <input type="search" id="busca-aluno" placeholder="Pesquisar por nome...">
+        </div>
+        <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th>Aluno</th><th>Média</th><th>Frequência</th><th>Tendência</th><th>Situação</th></tr>
+          </thead>
+          <tbody id="tabela-alunos"></tbody>
+        </table>
+        </div>
+      </div>
+      <div class="panel" id="painel-detalhe" style="display:none;"></div>
+    </section>
+
+    <section id="secao-comparacao" style="display:none;">
+      <div class="panel">
+        <h2>Comparar alunos</h2>
+        <p class="panel-sub">Selecione dois alunos da turma para comparar a evolução do rendimento.</p>
+        <div class="compare-picker">
+          <select id="comp-a"></select>
+          <select id="comp-b"></select>
+        </div>
+        <canvas id="grafico-comparacao" height="220"></canvas>
+      </div>
+    </section>
+
+    <section id="secao-professores" style="display:none;">
+      <div class="panel">
+        <h2>Avaliação dos professores</h2>
+        <p class="panel-sub">Média das avaliações preenchidas pelos alunos, por critério.</p>
+        <div id="lista-professores"></div>
+      </div>
+    </section>
+
+    <section id="secao-notificacoes" style="display:none;">
+      <div class="panel">
+        <h2>Resultados de atividades</h2>
+        <p class="panel-sub">
+          Assim que um aluno conclui uma atividade, o resultado aparece aqui — com as questões
+          em que ele mais demorou e o assunto relacionado, para orientar o reforço em sala.
+        </p>
+        <div id="lista-notificacoes"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="../assets/supabase.js"></script>
+<script src="../assets/data.js"></script>
+<script src="../assets/activities.js"></script>
+<script src="../assets/auth.js"></script>
+<script>
+  // espera o Chart.js (com timeout de 5s) — igual ao aluno.html
+  function esperarChart(timeoutMs = 5000) {
+    return new Promise(resolve => {
+      if (window.Chart) return resolve(true);
+      const t0 = Date.now();
+      const id = setInterval(() => {
+        if (window.Chart) { clearInterval(id); resolve(true); }
+        else if (Date.now() - t0 > timeoutMs) { clearInterval(id); resolve(false); }
+      }, 50);
+    });
+  }
+
+  (async () => {
+    await Promise.all([EDU.carregarTudo(), esperarChart()]);
+    const s = document.createElement("script");
+    s.src = "../assets/professor.js";
+    document.body.appendChild(s);
+  })();
+</script>
+</body>
+</html>
