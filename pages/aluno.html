@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EduMetrics — Meu desempenho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" type="image/png" sizes="256x256" href="../assets/logo/icon.png">
+<script src="../assets/Chart.js"></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><img class="brand-logo" src="../assets/logo/icon.png" alt=""><span>EduMetrics</span></div>
+    <nav>
+      <button class="nav-item active" data-secao="desempenho"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>Meu desempenho</button>
+      <button class="nav-item" data-secao="atividades"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>Atividades</button>
+      <button class="nav-item" data-secao="professores"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M16 11l2 2 4-4"/></svg></span>Meus professores</button>
+    </nav>
+    <div class="who">
+      <strong id="who-name">—</strong>
+      <span id="who-turma"></span>
+      <button class="logout" onclick="EDU_AUTH.sair()">Sair</button>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div>
+        <h1 id="titulo">Meu desempenho</h1>
+        <p>Acompanhe suas notas, frequência e evolução ao longo do ano letivo.</p>
+      </div>
+      <div class="user-menu">
+        <span class="user-chip"><span class="avatar" id="user-avatar">L</span><span id="user-name">—</span></span>
+        <button class="logout" onclick="EDU_AUTH.sair()">Sair</button>
+      </div>
+    </header>
+
+    <main>
+      <button class="menu-toggle" id="btn-menu"><svg class="ico" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>Menu</button>
+
+      <section id="secao-desempenho">
+        <section class="indicators" id="indicadores"></section>
+
+        <div class="two-col">
+          <div class="panel">
+            <h2>Evolução do rendimento</h2>
+            <p class="panel-sub">Média geral por bimestre, considerando todas as disciplinas.</p>
+            <canvas id="grafico-evolucao" height="200"></canvas>
+          </div>
+          <div class="panel">
+            <h2>Avisos para você</h2>
+            <p class="panel-sub">Gerados automaticamente a partir das suas notas e frequência.</p>
+            <ul class="alert-list" id="lista-alertas"></ul>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Notas por disciplina</h2>
+          <p class="panel-sub">Média por bimestre em cada componente curricular.</p>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr><th>Disciplina</th><th>1º Bim</th><th>2º Bim</th><th>3º Bim</th><th>4º Bim</th><th>Média</th></tr>
+              </thead>
+              <tbody id="tabela-notas"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Recomendações personalizadas</h2>
+          <p class="panel-sub">Sugestões de estudo com base no seu desempenho atual.</p>
+          <ul class="alert-list" id="lista-recomendacoes"></ul>
+        </div>
+      </section>
+
+      <section id="secao-atividades" style="display:none;">
+        <div class="panel">
+          <h2>Atividades da turma</h2>
+          <p class="panel-sub">Resolva as questões abaixo. Ao concluir, seu professor recebe o resultado automaticamente.</p>
+          <div id="lista-atividades"></div>
+        </div>
+      </section>
+
+      <section id="secao-professores" style="display:none;">
+        <div class="panel">
+          <h2>Meus professores</h2>
+          <p class="panel-sub">Avaliações dos professores que lecionam na sua turma, por critério.</p>
+          <div id="lista-professores-aluno"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/supabase.js"></script>
+<script src="../assets/data.js"></script>
+<script src="../assets/activities.js"></script>
+<script src="../assets/auth.js"></script>
+<script>
+  (async () => {
+    await EDU.carregarTudo();
+    if (!window.Chart) {
+      mostrarAvisoEduMetrics("O gráfico não está disponível. Confira o carregamento dos recursos locais.");
+    }
+    const s = document.createElement("script");
+    s.src = "../assets/aluno.js";
+    document.body.appendChild(s);
+  })();
+</script>
+</body>
+</html>

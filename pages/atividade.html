@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EduMetrics — Atividade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" type="image/png" sizes="256x256" href="../assets/logo/icon.png">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><img class="brand-logo" src="../assets/logo/icon.png" alt=""><span>EduMetrics</span></div>
+    <nav>
+      <a href="aluno.html" class="nav-item"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></span>Voltar ao painel</a>
+    </nav>
+    <div class="who">
+      <strong id="who-name">—</strong>
+      <button class="logout" onclick="EDU_AUTH.sair()">Sair</button>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div>
+        <h1 id="q-titulo">Atividade</h1>
+        <p>Responda com atenção — o tempo de cada questão é registrado.</p>
+      </div>
+      <div class="user-menu">
+        <span class="user-chip"><span class="avatar" id="user-avatar">L</span><span id="user-name">—</span></span>
+      </div>
+    </header>
+
+    <main>
+      <div id="area-quiz">
+        <div class="panel">
+          <div class="quiz-head">
+            <div>
+              <div class="quiz-progress" id="q-progresso"></div>
+            </div>
+            <div class="quiz-timer" id="q-timer">0:00</div>
+          </div>
+          <div class="quiz-bar-track"><div class="quiz-bar-fill" id="q-barra" style="width:0%"></div></div>
+
+          <p class="quiz-question" id="q-enunciado"></p>
+          <div class="quiz-options" id="q-opcoes"></div>
+
+          <div class="quiz-actions">
+            <button id="q-avancar" disabled>Próxima questão</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="area-resumo" style="display:none;">
+        <div class="panel summary-hero">
+          <div class="summary-badge"><svg class="ico" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <h2>Mais um passo na sua jornada</h2>
+          <p class="panel-sub" id="resumo-sub"></p>
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <div class="value num-display" id="resumo-acertos">—</div>
+              <div class="label">acertos</div>
+            </div>
+            <div class="summary-stat">
+              <div class="value num-display" id="resumo-tempo">—</div>
+              <div class="label">tempo total</div>
+            </div>
+          </div>
+          <div class="summary-callout">
+            <strong>Você está evoluindo!</strong>
+            <p>Seu resultado já foi enviado ao professor. Continue revisando os pontos abaixo para consolidar o aprendizado.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Seu aprendizado, em resumo</h2>
+          <p class="panel-sub">Questões em que você levou mais tempo:</p>
+          <ul class="summary-slow-list" id="resumo-lentas"></ul>
+        </div>
+
+        <div class="panel summary-reco">
+          <h2>O que treinar agora</h2>
+          <p id="resumo-reco-text"></p>
+          <button class="enter-btn" style="max-width:240px;" onclick="window.location.href='aluno.html'">Voltar ao painel</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/supabase.js"></script>
+<script src="../assets/data.js"></script>
+<script src="../assets/activities.js"></script>
+<script src="../assets/auth.js"></script>
+<script>
+  (async () => {
+    await EDU.carregarTudo();
+    const s = document.createElement("script");
+    s.src = "../assets/atividade.js";
+    document.body.appendChild(s);
+  })();
+</script>
+</body>
+</html>

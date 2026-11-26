@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EduMetrics — Painel do professor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" type="image/png" sizes="256x256" href="../assets/logo/icon.png">
+<script src="../assets/Chart.js"></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><img class="brand-logo" src="../assets/logo/icon.png" alt=""><span>EduMetrics</span></div>
+    <nav>
+      <button class="nav-item active" data-secao="visao-geral"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>Visão geral</button>
+      <button class="nav-item" data-secao="alunos"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Lista de alunos</button>
+      <button class="nav-item" data-secao="comparacao"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span>Comparar alunos</button>
+      <button class="nav-item" data-secao="professores"><span class="nav-icon"><svg class="ico" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>Avaliação docente</button>
+      <button class="nav-item" data-secao="notificacoes">
+        <span class="nav-icon"><svg class="ico" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>Atividades
+        <span class="badge-new" id="badge-notif" style="display:none;">0</span>
+      </button>
+    </nav>
+    <div class="who">
+      <strong id="who-name">—</strong>
+      <span id="who-disc"></span>
+      <button class="logout" onclick="EDU_AUTH.sair()">Sair</button>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div>
+        <h1>Painel da turma</h1>
+        <p>Indicadores de desempenho, alertas e comparação entre alunos.</p>
+      </div>
+      <div class="user-menu">
+        <span class="user-chip"><span class="avatar" id="user-avatar">M</span><span id="user-name">—</span></span>
+        <button class="logout" onclick="EDU_AUTH.sair()">Sair</button>
+        <div class="filters"><select id="filtro-turma"></select></div>
+      </div>
+    </header>
+
+    <main>
+      <button class="menu-toggle" id="btn-menu"><svg class="ico" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>Menu</button>
+
+      <section id="secao-visao-geral">
+        <section class="indicators" id="indicadores"></section>
+        <div class="two-col">
+          <div class="panel">
+            <h2>Evolução da turma</h2>
+            <p class="panel-sub">Média geral da turma por bimestre.</p>
+            <div class="chart-wrap"><canvas id="grafico-turma"></canvas></div>
+          </div>
+          <div class="panel">
+            <h2>Alertas da turma</h2>
+            <p class="panel-sub">Alunos que exigem atenção, do mais crítico ao menos.</p>
+            <ul class="alert-list" id="lista-alertas"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="secao-alunos" style="display:none;">
+        <div class="panel">
+          <h2>Lista de alunos</h2>
+          <p class="panel-sub">Pesquise por nome e clique em um aluno para ver detalhes.</p>
+          <div class="filters" style="margin-bottom:14px;">
+            <input type="search" id="busca-aluno" placeholder="Pesquisar por nome...">
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr><th>Aluno</th><th>Média</th><th>Frequência</th><th>Tendência</th><th>Situação</th></tr>
+              </thead>
+              <tbody id="tabela-alunos"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel" id="painel-detalhe" style="display:none;"></div>
+      </section>
+
+      <section id="secao-comparacao" style="display:none;">
+        <div class="panel">
+          <h2>Comparar alunos</h2>
+          <p class="panel-sub">Selecione dois alunos da turma para comparar a evolução do rendimento.</p>
+          <div class="compare-picker">
+            <select id="comp-a"></select>
+            <select id="comp-b"></select>
+          </div>
+          <div class="chart-wrap"><canvas id="grafico-comparacao"></canvas></div>
+        </div>
+      </section>
+
+      <section id="secao-professores" style="display:none;">
+        <div class="panel">
+          <h2>Avaliação dos professores</h2>
+          <p class="panel-sub">Média das avaliações preenchidas pelos alunos, por critério.</p>
+          <div id="lista-professores"></div>
+        </div>
+      </section>
+
+      <section id="secao-notificacoes" style="display:none;">
+        <div class="panel">
+          <h2>Resultados de atividades</h2>
+          <p class="panel-sub">Assim que um aluno conclui uma atividade, o resultado aparece aqui — com as questões em que ele mais demorou e o assunto relacionado.</p>
+          <div class="subject-filter" role="group" aria-label="Filtrar resultados por matéria">
+            <button type="button" class="active" data-filtro-materia="todas" aria-pressed="true">Todas as matérias</button>
+            <button type="button" data-filtro-materia="minha" aria-pressed="false">Minha matéria</button>
+          </div>
+          <div id="lista-notificacoes"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/supabase.js"></script>
+<script src="../assets/data.js"></script>
+<script src="../assets/activities.js"></script>
+<script src="../assets/auth.js"></script>
+<script>
+  (async () => {
+    await EDU.carregarTudo();
+    if (!window.Chart) {
+      mostrarAvisoEduMetrics("O gráfico não está disponível. Confira o carregamento dos recursos locais.");
+    }
+    const s = document.createElement("script");
+    s.src = "../assets/professor.js";
+    document.body.appendChild(s);
+  })();
+</script>
+</body>
+</html>

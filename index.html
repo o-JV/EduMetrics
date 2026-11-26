@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EduMetrics — Entrar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" type="image/png" sizes="256x256" href="assets/logo/icon.png">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="brand"><img class="brand-logo" src="assets/logo/icon.png" alt=""><span>EduMetrics</span></div>
+    <p class="login-tag">Painel acadêmico da turma, em um só lugar.</p>
+
+    <div class="role-tabs">
+      <button type="button" class="active" data-papel="professor">Sou professor(a)</button>
+      <button type="button" data-papel="aluno">Sou aluno(a)</button>
+    </div>
+
+    <div class="field" id="campo-professor">
+      <label for="sel-professor">Selecione seu nome</label>
+      <select id="sel-professor"></select>
+    </div>
+
+    <div class="field" id="campo-aluno" style="display:none;">
+      <label for="sel-aluno">Selecione seu nome</label>
+      <select id="sel-aluno"></select>
+    </div>
+
+    <div class="field">
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" placeholder="Digite a senha da conta">
+    </div>
+
+    <p class="form-error" id="erro-login"></p>
+
+    <button class="enter-btn" id="btn-entrar">Entrar no painel</button>
+
+  </div>
+</div>
+
+<script src="assets/supabase.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+(async () => {
+  await EDU.carregarTudo();
+  const selProf = document.getElementById("sel-professor");
+  const selAluno = document.getElementById("sel-aluno");
+  const campoProf = document.getElementById("campo-professor");
+  const campoAluno = document.getElementById("campo-aluno");
+  const tabs = document.querySelectorAll(".role-tabs button");
+  let papelAtual = "professor";
+
+  EDU.listarProfessores().forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = `${p.nome} — ${p.disciplina}`;
+    selProf.appendChild(opt);
+  });
+  EDU.listarAlunos().forEach(a => {
+    const opt = document.createElement("option");
+    opt.value = a.id;
+    opt.textContent = `${a.nome} — ${a.turma}`;
+    selAluno.appendChild(opt);
+  });
+
+  tabs.forEach(btn => {
+    btn.addEventListener("click", () => {
+      tabs.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      papelAtual = btn.dataset.papel;
+      campoProf.style.display = papelAtual === "professor" ? "block" : "none";
+      campoAluno.style.display = papelAtual === "aluno" ? "block" : "none";
+    });
+  });
+
+  const erroBox = document.getElementById("erro-login");
+
+  document.getElementById("btn-entrar").addEventListener("click", () => {
+    const id = papelAtual === "professor" ? selProf.value : selAluno.value;
+    const senha = document.getElementById("senha").value;
+    const resultado = validarCredencial(papelAtual, id, senha);
+    if (!resultado.ok) {
+      erroBox.textContent = resultado.motivo;
+      erroBox.classList.add("show");
+      return;
+    }
+    erroBox.classList.remove("show");
+    EDU_AUTH.entrar(papelAtual, id);
+    window.location.href = papelAtual === "professor" ? "pages/professor.html" : "pages/aluno.html";
+  });
+
+  document.getElementById("senha").addEventListener("keydown", e => {
+    if (e.key === "Enter") document.getElementById("btn-entrar").click();
+  });
+})();
+</script>
+</body>
+</html>
