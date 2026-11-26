@@ -40,37 +40,3 @@ Para conectar outro projeto:
 
 Uma chave publishable/anon usada no navegador é pública por definição. Nunca coloque uma chave `service_role` ou outro segredo no frontend. O login atual é apenas uma seleção de perfil e não fornece autenticação real para políticas por usuário; portanto, não use dados pessoais ou acadêmicos reais com esta configuração demonstrativa.
 
-## Publicar no GitHub Pages
-
-O projeto pode ser publicado como site estático: `index.html` está na raiz e não há etapa de build. Os caminhos dos recursos são relativos, então o site funciona tanto na raiz de um domínio quanto em um endereço de projeto, como `https://usuario.github.io/repositorio/`.
-
-1. Envie o conteúdo desta pasta para um repositório GitHub.
-2. No repositório, abra **Settings → Pages**.
-3. Em **Build and deployment**, selecione **Deploy from a branch**.
-4. Escolha a branch publicada (por exemplo, `main`) e a pasta `/(root)`, depois salve.
-5. Aguarde o GitHub Pages publicar e abra o endereço mostrado nessa página de configuração.
-
-Não é necessário configurar Jekyll, Node.js ou GitHub Actions. Como o site é público, qualquer configuração incluída no JavaScript do navegador também ficará visível. Revise as políticas RLS e use apenas dados de demonstração antes de publicar.
-
-## Estrutura
-
-```text
-.
-├── index.html                 # Login demonstrativo
-├── pages/
-│   ├── aluno.html             # Painel do aluno
-│   ├── professor.html         # Painel do professor
-│   └── atividade.html         # Resolução de atividade
-└── assets/
-    ├── Chart.js               # Implementação local de gráficos de linha
-    ├── data.js                # Acesso aos dados e fallback demonstrativo
-    ├── activities.js          # Atividades e resultados
-    ├── auth.js                # Sessão demonstrativa no localStorage
-    ├── aluno.js               # Lógica do painel do aluno
-    ├── professor.js           # Lógica do painel do professor
-    ├── atividade.js           # Lógica do quiz
-    ├── supabase.js            # Cliente REST e configuração Supabase
-    ├── style.css              # Estilos e layout responsivo
-    ├── seed.sql               # Dados iniciais para banco de teste
-    └── logo/                  # Logo e ícone do app
-```
